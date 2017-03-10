@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>payPage</title>
+    <script type="text/javascript" src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>         <!--必须引用的微信控件-->
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/1.8.3/jquery.min.js"></script>
+    <script>
+        function executePay(){
+            var payConfig = {
+                debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                // 下面的 /{/<_%***%_>} 都是nodejs 的 ejs引擎，渲染，会替换成支付配置和支付参数，注意最外层的 '' 单引号是必须的
+                appId:     '<%=wechatPayConfig.appId%>',            // 必填，公众号的唯一标识
+                timestamp: '<%=wechatPayConfig.timestamp%>',        // 必填，生成签名的时间戳
+                nonceStr:  '<%=wechatPayConfig.nonceStr%>',          // 必填，生成签名的随机串
+                signature: '<%=wechatPayConfig.signature%>',        // 必填，签名，见附录1
+                jsApiList: ['chooseWXPay']          // 必填，需要使用的JS接口列表,   如果只需要支付则只填这一个
+            };
+            wx.config(payConfig);
+
+            wx.ready(function(){
+                // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+                console.log('           config ready !!!  ');
+                alert('微信网页JSSDK 配置成功.   参数 payConfig  = ');    alert(payConfig);
+                var pay_timestamp   = '<%=wechatPayParam.pay_timestamp%>';             // 这里的 /{/$/***/} 都是php渲染，会替换成支付配置和支付参数，注意最外层的 '' 单引号是必须的
+                var pay_nonceStr    = '<%=wechatPayParam.pay_nonceStr%>';
+                var pay_package     = '<%=wechatPayParam.pay_package%>';
+                var signType        = '<%=wechatPayParam.pay_signType%>';
+                var paySign         = '<%=wechatPayParam.pay_sign%>';
+                alert('唤起微信支付的参数： pay param : pay_timestamp = ' + pay_timestamp + '        nonceStr = ' + pay_nonceStr + '    package = ' + pay_package
+                + '    signType  = ' + signType + '   paySign = ' + paySign );
+//                alert({pay_timestamp : pay_timestamp, nonceStr: nonceStr, pay_package:pay_package, signType: signType, paySign: paySign});
+                wx.chooseWXPay({
+                    timestamp: pay_timestamp,       // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                    nonceStr: pay_nonceStr,         // 支付签名随机串，不长于 32 位
+                    package: pay_package,           // 统一支付接口返回的 prepay_id 参数值，提交格式如：prepay_id=***）
+                    signType: 'MD5',                // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                    paySign: paySign,               // 支付签名
+                    success: function (res) {
+                        // 支付成功后的回调函数
+                        alert('支付成功');
+                        //  这里可以处理用户支付成功后的网页跳转
+                        console.log('           chooseWXPay res  = ');
+                        console.dir(res);
+                    },
+                    fail : function(err){
+                        // 用户取消支付，程序会来这里
+                        console.log('chooseWxPay Error.  err = ' + JSON.stringify(err));
+//                        alert('chooseWxPay Error.  err = ');
+//                        alert(JSON.stringify(err));
+                    }
+                });
+            });
+            wx.error(function(res){
+                // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+                alert(' pay config error ');
+                alert(res);
+                console.log('           pay config ERROR !!!  res  = ');  console.dir(res);
+            });
+        }
+    </script>
+    <style>
+        body{
+            font-size: 2em;
+        }
+        input{
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+<h1>微信公众号支付测试页</h1>
+
+<h2>微信公众号jssdk配置 wx.config() 需要的参数</h2>
+<p>appId            :  <%=wechatPayConfig.appId%></p>
+<p>timestamp        :  <%=wechatPayConfig.timestamp%></p>     <!-- 这里把参数放在页面上只是为了调试方便，实际不需要把配置和支付参数显示在页面上。 -->
+<p>nonceStr         :  <%=wechatPayConfig.nonceStr%></p>
+
+<h2>微信公众号内，唤起微信支付  wx.wxPay() 需要的参数  </h2>
+<p>pay_timestamp  : <%=wechatPayParam.pay_timestamp%></p>     <!-- 这里把参数放在页面上只是为了调试方便，实际不需要把配置和支付参数显示在页面上。 -->
+<p>pay_nonceStr   : <%=wechatPayParam.pay_nonceStr%></p>
+<p>pay_package    : <%=wechatPayParam.pay_package%></p>
+<p>pay_sign       : <%=wechatPayParam.pay_sign%></p>
+
+
+<p></p>
+<input type="button" onclick="javascript:executePay();" value="executePay  "/>  <!-- 点击这个按钮，执行支付（唤起微信支付，支付完成后回到指定页面） -->
+<p></p>
+<input type="button" onclick="javascript:alert('message');" value="测试javascript代码能否执行alert(message) "/>      <!-- 这个按钮只是为了测试 javascript是否能正确执行-->
+
+</body>
+</html>

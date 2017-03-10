@@ -1,0 +1,42 @@
+{
+  "name": "wechat-helper",
+  "version": "1.0.0",
+  "description": "A nodejs based wechat helper module for starter programmer (so it is (planned to be) programmed to be very easy to integrate), which may be used to facilitate wechat authentication, wechat pay integration and other usages. Working on more funtions. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "wechat-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jetwaves/wechat-helper.git"
+  },
+  "keywords": [
+    "wechat",
+    "pay",
+    "wechat-pay"
+  ],
+  "author": "Shiqiang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jetwaves/wechat-helper/issues"
+  },
+  "homepage": "https://github.com/jetwaves/wechat-helper#readme",
+  "dependencies": {
+    "async": "^2.1.5",
+    "cacheman": "^2.2.1",
+    "encoding": "^0.1.12",
+    "express": "^4.15.2",
+    "https": "^1.0.0",
+    "json-bigint": "^0.2.3",
+    "lodash": "^4.17.4",
+    "md5": "^2.2.1",
+    "os": "^0.1.1",
+    "promise": "^7.1.1",
+    "querystring": "^0.2.0",
+    "request": "^2.81.0",
+    "sha1": "^1.1.1",
+    "underscore": "^1.8.3",
+    "url": "^0.11.0",
+    "xml2js": "^0.4.17"
+  }
+}
